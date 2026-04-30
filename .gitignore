@@ -39,3 +39,9 @@ inc/
 /.carmel/
 # cpanfile.snapshot should generally be ignored for library code, otherwise included
 # cpanfile.snapshot
+
+# Windows files
+/windows/
+
+# Wine prefix
+/wineprefix/
