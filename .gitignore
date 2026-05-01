@@ -45,3 +45,6 @@ inc/
 
 # Wine prefix
 /wineprefix/
+
+# binaries
+/bin/
