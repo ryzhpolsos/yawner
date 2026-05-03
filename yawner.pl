@@ -12,13 +12,6 @@ use Yawner::Lang::Parser;
 use Yawner::Compiler::Shell;
 use Yawner::Compiler::Batch;
 
-use Yawner::Util::Logger;
-
-my $logger = Yawner::Util::Logger->new('test');
-$logger->info('Say hi');
-$logger->warn('A warning');
-$logger->error('An error');
-
 my $source_code;
 
 do {
