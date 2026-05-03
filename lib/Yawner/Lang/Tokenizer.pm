@@ -31,7 +31,7 @@ my %SpecialChar = (
     NewLine     => "\n"
 );
 
-my $is_ident_regex = qr(^\w+$);
+my $is_ident_regex = qr(^[\w\$]+$);
 my $is_number_regex = qr(^\d+$);
 
 sub is_ident {
@@ -51,14 +51,17 @@ sub print_token {
 
 sub tokenize {
     my $code = shift;
-    $code =~ tr/\r\n/\n/;
-    $code =~ tr/\r/\n/;
+    $code =~ s/\r\n/\n/g;
+    $code =~ s/\r/\n/g;
 
     my @tokens;
     my $state = $State{None};
     my $old_state = $state;
 
     my $buffer = '';
+
+    my $line = 1;
+    my $char = 0;
 
     my sub set_state {
         $old_state = $state;
@@ -68,7 +71,11 @@ sub tokenize {
     for(my $i = 0; $i < length($code); $i++){
         my $ch = substr($code, $i, 1);
 
-        # say "ch = $ch, state = $state";
+        $char++;
+        if($ch eq $SpecialChar{NewLine}){
+            $line++;
+            $char = 0;
+        }
 
         if($state == $State{Comment}){
             if($ch eq $SpecialChar{NewLine}){
@@ -79,8 +86,19 @@ sub tokenize {
         }elsif($ch eq $SpecialChar{Escape}){
             set_state 'Escape';
             next;
-        }elsif($ch eq $SpecialChar{NewLine}){
-            push @tokens, Yawner::Lang::Token->new($TokenType{NewLine}, '');
+        }
+
+        if($state != $State{String} && $state != $State{RawString}){
+            if($ch eq $SpecialChar{Comment}){
+                set_state 'Comment';
+            }else{
+                for(qw(LParen RParen Comma Equals)){
+                    if($ch eq $SpecialChar{$_}){
+                        push @tokens, Yawner::Lang::Token->new($TokenType{$_}, '', $line, $char);
+                        last;
+                    }
+                }            
+            }
         }
 
         if($state == $State{Escape}){
@@ -100,13 +118,13 @@ sub tokenize {
                 $buffer .= $ch;
             }else{
                 set_state 'None';
-                push @tokens, Yawner::Lang::Token->new($TokenType{Ident}, $buffer);
+                push @tokens, Yawner::Lang::Token->new($TokenType{Ident}, $buffer, $line, $char);
                 $buffer = '';
             }
         }elsif($state == $State{String}){
             if($ch eq $SpecialChar{String}){
                 set_state 'None';
-                push @tokens, Yawner::Lang::Token->new($TokenType{String}, $buffer);
+                push @tokens, Yawner::Lang::Token->new($TokenType{String}, $buffer, $line, $char);
                 $buffer = '';
             }else{
                 $buffer .= $ch;
@@ -114,27 +132,18 @@ sub tokenize {
         }elsif($state == $State{RawString}){
             if($ch eq $SpecialChar{RawString}){
                 set_state 'None';
-                push @tokens, Yawner::Lang::Token->new($TokenType{RawString}, $buffer);
+                push @tokens, Yawner::Lang::Token->new($TokenType{RawString}, $buffer, $line, $char);
                 $buffer = '';
             }else{
                 $buffer .= $ch;
             }
         }
-
-        if($state != $State{String} && $state != $State{RawString}){
-            if($ch eq $SpecialChar{Comment}){
-                set_state 'Comment';
-            }else{
-                for(qw(LParen RParen Comma)){
-                    if($ch eq $SpecialChar{$_}){
-                        push @tokens, Yawner::Lang::Token->new($TokenType{$_}, '');
-                        last;
-                    }
-                }            
-            }
+        
+        if($ch eq $SpecialChar{NewLine}){
+            push @tokens, Yawner::Lang::Token->new($TokenType{NewLine}, '', $line, $char);
         }
     }
-    # my $tok = Yawner::Lang::Token->new(TokenType::, 'Token');
+    # my $tok = Yawner::Lang::Token->new(TokenType::, 'Token', $line, $char);
 
     return @tokens;
 }

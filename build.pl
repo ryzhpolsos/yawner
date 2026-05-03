@@ -6,5 +6,5 @@ use warnings;
 use utf8;
 
 mkdir 'bin' unless -d 'bin';
-print `pp -o bin/yawner -I src yawner.pl`;
+print `pp -o bin/yawner -I lib yawner.pl`;
 say 'Done';

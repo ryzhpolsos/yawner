@@ -17,18 +17,33 @@ my %CommandTable = (
     echo => 'echo'
 );
 
+sub process_node {
+    my $node = shift;
+    my $result = '';
+
+    if($node->name eq 'Yawner::Lang::AST::LiteralValueNode'){
+        $result = '\'' . $node->value . '\''; 
+    }elsif($node->name eq 'Yawner::Lang::AST::ExpandableValueNode'){
+        $result = '"' . $node->value . '"';
+    }elsif($node->name eq 'Yawner::Lang::AST::CommandNode'){
+        $result .= $CommandTable{$node->cmd} . ' ';
+
+        foreach(@{$node->args}){
+            $result .= process_node($_) . ' ';
+        }
+    }elsif($node->name eq 'Yawner::Lang::AST::VariableDefinitionNode'){
+        $result .= $node->var . '=' . process_node($node->value);
+    }
+
+    return $result;
+}
+
 sub compile {
     my @ast = @_;
     my $result = $header;
 
-    foreach my $node (@ast){
-        if($node->name eq 'Yawner::Lang::AST::CommandNode'){
-            $result .= $CommandTable{$node->cmd} . ' ';
-
-            foreach(@{$node->args}){
-                $result .= '\'' . $_->value . '\'';
-            }
-        }
+    foreach(@ast){
+        $result .= process_node($_) . "\n";
     }
 
     return $result;

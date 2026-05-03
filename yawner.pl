@@ -12,6 +12,13 @@ use Yawner::Lang::Parser;
 use Yawner::Compiler::Shell;
 use Yawner::Compiler::Batch;
 
+use Yawner::Util::Logger;
+
+my $logger = Yawner::Util::Logger->new('test');
+$logger->info('Say hi');
+$logger->warn('A warning');
+$logger->error('An error');
+
 my $source_code;
 
 do {
@@ -33,7 +40,7 @@ say '';
 say '=== AST ===';
 
 my @ast = build_ast @tokens;
-say Dumper \@ast;
+print_ast \@ast;
 
 say '';
 say '=== RESULT 1 ===';

@@ -16,15 +16,17 @@ our %TokenType = (
     Equals      => 5,
     String      => 6,
     RawString   => 7,
-    NewLine     => 8
+    NewLine     => 8,
 );
 
 sub new {
-    my ($class, $type, $value) = @_;
+    my ($class, $type, $value, $line, $char) = @_;
 
     return bless {
         type => $type,
-        value => $value
+        value => $value,
+        line => $line,
+        char => $char
     }, $class;
 }
 
@@ -34,6 +36,14 @@ sub type {
 
 sub value {
     return (shift)->{value};
+}
+
+sub line {
+    return (shift)->{line};
+}
+
+sub char {
+    return (shift)->{char};
 }
 
 1;

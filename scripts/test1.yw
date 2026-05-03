@@ -1,3 +1,2 @@
-# comment
-
-echo 'Hi there :3'
+foo = 'hello'
+echo $foo
