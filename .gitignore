@@ -48,3 +48,6 @@ inc/
 
 # binaries
 /bin/
+
+# test stuff
+/scripts/out/
