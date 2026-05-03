@@ -38,7 +38,7 @@ set "foo=hello"
 echo(%foo%
 ```
 
-## Usage
+## Installation
 
 You'll need perl 5.42.0 or later.
 
@@ -58,3 +58,13 @@ cpanm --installdeps .
 perl build.pl
 ```
 Your fresh yawner binary will be in `bin/yawner`.
+
+## Usage
+
+```
+yawner [-i <input file>] [-o <output file>] [-f <bat|sh>]
+
+    -i <input file>: source script file, defaults to stdin
+    -o <output file>: output file, defaults to stdout
+    -f <bat|sh>: output file format, guessed from output file name if omitted
+```
