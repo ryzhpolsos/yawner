@@ -17,6 +17,8 @@ our %TokenType = (
     String      => 6,
     RawString   => 7,
     NewLine     => 8,
+    LBlock      => 9,
+    RBlock      => 10
 );
 
 sub new {

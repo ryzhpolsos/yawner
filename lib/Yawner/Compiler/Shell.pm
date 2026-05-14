@@ -26,7 +26,7 @@ sub process_node {
     }elsif($node->name eq 'Yawner::Lang::AST::ExpandableValueNode'){
         $result = '"' . $node->value . '"';
     }elsif($node->name eq 'Yawner::Lang::AST::CommandNode'){
-        $result .= $CommandTable{$node->cmd} . ' ';
+        $result .= ($CommandTable{$node->cmd} || $node->cmd) . ' ';
 
         foreach(@{$node->args}){
             $result .= process_node($_) . ' ';

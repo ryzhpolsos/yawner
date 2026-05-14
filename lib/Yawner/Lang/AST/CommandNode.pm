@@ -4,11 +4,11 @@ use warnings;
 use parent qw(Yawner::Lang::AST::BaseNode);
 
 sub new {
-    my ($class, $line, $char, $cmd, @args) = @_;
+    my ($class, $line, $char) = @_;
 
     my $self = $class->SUPER::new($line, $char);
-    $self->{cmd} = $cmd;
-    $self->{args} = \@args;
+    $self->{cmd} = '';
+    $self->{args} = [];
     return $self;
 }
 
@@ -20,8 +20,14 @@ sub args {
     return (shift)->{args};
 }
 
-sub add_arg {
-    push @{(shift)->{args}}, shift;
+sub add_node {
+    my ($self, $node) = @_;
+
+    if(!$self->{cmd}){
+        $self->{cmd} = $node;
+    }else{
+        push @{$self->{args}}, $node;
+    }
 }
 
 sub to_string {

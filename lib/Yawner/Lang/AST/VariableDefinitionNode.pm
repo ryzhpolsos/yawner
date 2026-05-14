@@ -20,7 +20,7 @@ sub value {
     return (shift)->{value};
 }
 
-sub add_arg {
+sub add_node {
     my ($self, $value) = @_;
     $self->{value} = $value;
 }

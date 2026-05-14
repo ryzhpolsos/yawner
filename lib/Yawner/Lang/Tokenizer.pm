@@ -28,7 +28,9 @@ my %SpecialChar = (
     RawString   => '\'',
     Escape      => '\\',
     Comment     => '#',
-    NewLine     => "\n"
+    NewLine     => "\n",
+    LBlock      => '{',
+    RBlock      => '}'
 );
 
 my $is_ident_regex = qr(^[\w\$]+$);
@@ -92,7 +94,7 @@ sub tokenize {
             if($ch eq $SpecialChar{Comment}){
                 set_state 'Comment';
             }else{
-                for(qw(LParen RParen Comma Equals)){
+                for(qw(LParen Comma Equals LBlock)){
                     if($ch eq $SpecialChar{$_}){
                         push @tokens, Yawner::Lang::Token->new($TokenType{$_}, '', $line, $char);
                         last;
@@ -139,8 +141,11 @@ sub tokenize {
             }
         }
         
-        if($ch eq $SpecialChar{NewLine}){
-            push @tokens, Yawner::Lang::Token->new($TokenType{NewLine}, '', $line, $char);
+        for(qw(RParen RBlock NewLine)){
+            if($ch eq $SpecialChar{$_}){
+                push @tokens, Yawner::Lang::Token->new($TokenType{$_}, '', $line, $char);
+                last;
+            }
         }
     }
     # my $tok = Yawner::Lang::Token->new(TokenType::, 'Token', $line, $char);
